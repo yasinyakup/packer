@@ -6,6 +6,7 @@ import com.mobiquity.model.Record;
 import com.mobiquity.util.FileUtil;
 
 import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -82,17 +83,19 @@ public class Packer {
      */
     private static String getItemIndexes(int[][] matrix, Record r) {
 
-        String indexes = "";
-        int i = matrix.length - 1;
-        int j = matrix[0].length - 1;
+        String indexes = ""; //comma separated String value as result
+        int i = matrix.length - 1; //Row size of the matrix
+        int j = matrix[0].length - 1; //column size of the matrix
+        List<Integer> indexList = new LinkedList<>();// index list as temporary to use contains function
         while (i > 0 && j > 0) {
             if (matrix[i][j] != matrix[i - 1][j]) {
-                final int finalI = i;
-                int tmpIndex = i;
+                indexList.add(i);
+                final int finalI = i;//temp local variable to use in lambda
+                int tmpIndex = i;// temp local variable to swap the index
                 List<Item> sameCostItems = r.getItems().stream().filter(item -> item.getCost() == r.getItems().get(finalI).getCost() &&
-                        item.getIndex() > finalI && item.getWeight() < r.getItems().get(finalI).getWeight()).collect(Collectors.toList());
-                if (sameCostItems.size()>0) {
-                    tmpIndex = sameCostItems.stream().min(Comparator.comparingDouble(Item::getWeight)).orElseThrow().getIndex().intValue();
+                        item.getIndex() > finalI && item.getWeight() < r.getItems().get(finalI).getWeight()).collect(Collectors.toList());//same cost items
+                if (sameCostItems.size()>0 && !indexList.contains(sameCostItems.stream().min(Comparator.comparingDouble(Item::getWeight)).orElseThrow().getIndex().intValue())) {
+                    tmpIndex = sameCostItems.stream().min(Comparator.comparingDouble(Item::getWeight)).orElseThrow().getIndex().intValue();//find index of minimum weight items with same cost
                 }
                 indexes = tmpIndex + "," + indexes;
                 j -= r.getItems().get(i).getWeight().intValue();
