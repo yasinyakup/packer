@@ -6,6 +6,8 @@ import com.mobiquity.util.FileUtil;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -50,45 +52,16 @@ class PackTest {
         assertEquals(expectedResult, actualResult);
     }
 
-    @Test
-    public void packageMaxWeightExceptionTest() {
+    @ParameterizedTest
+    @CsvSource({"example_input_max_package_weight_exception,Package weight exceeded the MAX WEIGHT",
+            "example_input_max_item_cost_exception,Item Cost exceeded the MAX COST",
+            "example_input_max_item_weight_exception,Item weight exceeded the MAX WEIGHT",
+            "example_input_max_item_count_exception,Total number of items exceeded the MAX NUMBER"})
+    public void packageMaxWeightExceptionTest(String filePath, String expectedMessage) {
 
         Exception exception = assertThrows(APIConstraintErrorException.class, () -> {
-            Packer.pack("src/main/test/resources/example_input_max_package_weight_exception");
+            Packer.pack("src/main/test/resources/" + filePath);
         });
-        String expectedMessage = "Package weight exceeded the MAX WEIGHT";
-        String actualMessage = exception.getMessage();
-        assertTrue(actualMessage.contains(expectedMessage));
-    }
-
-    @Test
-    public void itemMaxCostExceptionTest() {
-
-        Exception exception = assertThrows(APIConstraintErrorException.class, () -> {
-            Packer.pack("src/main/test/resources/example_input_max_item_cost_exception");
-        });
-        String expectedMessage = "Item Cost exceeded the MAX COST";
-        String actualMessage = exception.getMessage();
-        assertTrue(actualMessage.contains(expectedMessage));
-    }
-
-    @Test
-    void itemMaxWeightExceptionTest() {
-
-        Exception exception = assertThrows(APIConstraintErrorException.class, () -> {
-            Packer.pack("src/main/test/resources/example_input_max_item_weight_exception");
-        });
-        String expectedMessage = "tem weight exceeded the MAX WEIGHT";
-        String actualMessage = exception.getMessage();
-        assertTrue(actualMessage.contains(expectedMessage));
-    }
-
-    @Test
-    void itemCountExceptionTest() {
-        Exception exception = assertThrows(APIConstraintErrorException.class, () -> {
-            Packer.pack("src/main/test/resources/example_input_max_item_count_exception");
-        });
-        String expectedMessage = "Total number of items exceeded the MAX NUMBER";
         String actualMessage = exception.getMessage();
         assertTrue(actualMessage.contains(expectedMessage));
     }
