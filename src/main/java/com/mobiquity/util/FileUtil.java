@@ -7,6 +7,7 @@ import com.mobiquity.model.Item;
 import com.mobiquity.model.Record;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -35,7 +36,7 @@ public class FileUtil {
         Path path = Paths.get(filePath);
         List<Record> records = new LinkedList<>();
         try {
-            List<String> lines = Files.readAllLines(path);
+            List<String> lines = Files.readAllLines(path, Charset.defaultCharset());
             lines.forEach(line -> records.add(getRecord(line)));
         } catch (IOException e) {
             throw new APIException(e.getMessage());
@@ -49,9 +50,10 @@ public class FileUtil {
      * @throws APIException
      */
     private static Record getRecord(String line) throws APIConstraintErrorException {
+        if (line==null||line.isEmpty()){
+            throw new APIConstraintErrorException("Empty line in specified file");
+        }
         List<String> stringItems = Arrays.asList(line.split(" "));
-
-
         try {
             List<Item> items = new LinkedList<>();
             items.add(Item.builder().index(0L)

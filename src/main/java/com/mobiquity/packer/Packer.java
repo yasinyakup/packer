@@ -34,8 +34,8 @@ public class Packer {
         var result = new StringBuilder();
 
         List<Record> records = FileUtil.getRecords(filePath);
-        if (records == null) {
-            throw new APIException("null record");
+        if (records.isEmpty()) {
+            throw new APIException("Empty file");
         }
         records.forEach(r -> {
             String testResult = getResult(r);
@@ -55,7 +55,7 @@ public class Packer {
 
         //initialize the knapsack matrix
         int[][] matrix = new int[r.getItems().size()][r.getCapacity() + 1];
-
+        //according to the cost and weight of the items, fill the knapsack matrix
         for (int i = 0; i < r.getItems().size(); i++) {
             for (int c = 0; c <= r.getCapacity(); c++) {
                 if (i == 0 || c == 0) {
@@ -90,7 +90,7 @@ public class Packer {
         while (i > 0 && j > 0) {
             if (matrix[i][j] != matrix[i - 1][j]) {
                 indexList.add(i);
-                final int finalI = i;//temp local variable to use in lambda
+                final int finalI = i;//temp local variable to use inside lambda function
                 int tmpIndex = i;// temp local variable to swap the index
                 List<Item> sameCostItems = r.getItems().stream().filter(item -> item.getCost() == r.getItems().get(finalI).getCost() &&
                         item.getIndex() > finalI && item.getWeight() < r.getItems().get(finalI).getWeight()).collect(Collectors.toList());//same cost items
