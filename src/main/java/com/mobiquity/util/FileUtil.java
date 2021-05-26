@@ -50,7 +50,7 @@ public class FileUtil {
      * @throws APIException
      */
     private static Record getRecord(String line) throws APIConstraintErrorException {
-        if (line==null||line.isEmpty()){
+        if (line == null || line.isEmpty()) {
             throw new APIConstraintErrorException("Empty line in specified file");
         }
         List<String> stringItems = Arrays.asList(line.split(" "));
@@ -75,7 +75,7 @@ public class FileUtil {
             if (items.size() > Constraint.PACKAGE_ITEMS_NUM) {
                 throw new APIConstraintErrorException("Total number of items exceeded the MAX NUMBER");
             }
-            return Record.builder().capacity(capacity * 100)
+            return Record.builder().capacity(capacity * 100) //Multiply 100 for floating point value of the capacity
                     .items(items)
                     .build();
         } catch (NumberFormatException e) {
@@ -93,7 +93,7 @@ public class FileUtil {
     private static Item getItem(String stringItem) throws NumberFormatException {
         String[] values = stringItem.split(",");
         return Item.builder().index(Long.parseLong(values[0].substring(1)))
-                .weight(Double.parseDouble(values[1]) * 100)
+                .weight(Double.parseDouble(values[1]) * 100)//Multiply 100 for floating point value of the weight
                 .cost(Integer.parseInt(values[2].substring(1, values[2].length() - 1)))
                 .build();
     }
